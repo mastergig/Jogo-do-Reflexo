@@ -1,0 +1,66 @@
+<html>
+	<head>
+		<style type='text/css'>
+			body,html{
+				margin: 0;
+				padding: 0;
+				width: 100%;
+				height: 100%;
+				font-family: Tahoma;
+				text-align: center;
+				color: white;
+				background: #333 url(https://img.magnific.com/fotos-gratis/textura-rachada-do-asfalto_1194-5977.jpg?t=st=1787584397~exp=1787587997~hmac=6807bd85be9d0e6bc8c5f73443f750a69dc2d249df4fcb1f01c1de2afbfb8160&w=1480) repeat;
+			}
+			#tecla{
+				color: #ec4;
+				font-size: 400;
+			}
+			#pontos{
+				font-family:monospace;
+				font-size: 67;
+			}
+		</style>
+		<script type='text/javascript'>
+			var pontos = 0;
+			var highscore = 0;
+			var tecla;
+			function novaLetra()
+			{
+				let dificuldade = 4 + Math.floor(pontos/6.5);
+				if(dificuldade > 25) dificuldade = 25;
+				let n = Math.floor(Math.random() * dificuldade);
+				tecla = (n == 0)?"A":(n == 1)?"S":(n == 2)?"D":(n == 3)?"W":(n == 4)?"E":(n == 5)?"Z":(n == 6)?"X":(n == 7)?"C":(n == 8)?"R":(n == 9)?"F":(n == 10)?"V":(n == 11)?"P":(n == 12)?"O":(n == 13)?"L":(n == 14)?"I":(n == 15)?"K":(n == 16)?"T":(n == 17)?"G":(n == 18)?"B":(n == 19)?"Y":(n == 20)?"H":(n == 21)?"N":(n == 22)?"U":(n == 23)?"J":(n == 24)?"M":"Q"
+				if( pontos > highscore ) highscore = pontos;
+				document.getElementById("tecla").innerHTML = tecla;
+				document.getElementById("pontos").innerHTML = "Pontuação: " + pontos + " Highscore: " + highscore;
+				// tempo pra atualizar/perder a partida
+				let tempo = 10000 - (pontos * 5);
+				if(pontos > 0)
+				{
+					setTimeout(validaFase, tempo, pontos);
+				}
+			}
+			function digito(gatilho, evento)
+			{
+				if(evento.key.toUpperCase() == tecla)
+					pontos += 1;
+				else
+					pontos = 0;
+				novaLetra();
+			}
+			function validaFase(dificuldade)
+			{
+				if(dificuldade == pontos)
+				{
+					pontos = 0;
+					novaLetra();
+				}
+			}
+		</script>
+	</head>
+	
+	<body onload="novaLetra()" onkeydown="digito(this, event)">
+		<div id="tecla"></div>
+		<div id="pontos"></div>
+	</body>
+</html>
