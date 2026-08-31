@@ -13,7 +13,18 @@
 			}
 			#tecla{
 				color: #ec4;
+				text-shadow: 2px 2px 4px rgba(67, 67, 67, 0.67);
 				font-size: 400;
+			}
+			@keyframes mudarCor {
+				0%{ color: #ec4; }
+				67%{ color: #ec7000; }
+				100%{ color: #ff0000; }
+			}
+			.tempoCor {
+				animation-name: mudarCor;
+				animation-timing-function: linear;
+				animation-iteration-count: infinite;
 			}
 			#pontos{
 				font-family:monospace;
@@ -24,42 +35,63 @@
 			var pontos = 0;
 			var highscore = 0;
 			var tecla;
+			var letras = ["W","A","S","D"];
+			
+			function novoJogo()
+			{
+				pontos = 0;
+				letras = ["W","A","S","D"];
+				let aleatorio = ["B","C","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","T","U","V","X","Y","Z"];
+				
+				//atualiza a lista de teclas para que cada 
+				while (aleatorio.length > 0) {
+					let indice = Math.floor(Math.random() * aleatorio.length);
+					let letra = aleatorio.splice(indice, 1)[0];
+					letras.push(letra);
+				}
+				novaLetra();
+			}
 			function novaLetra()
 			{
-				let dificuldade = 4 + Math.floor(pontos/6.5);
-				if(dificuldade > 25) dificuldade = 25;
-				let n = Math.floor(Math.random() * dificuldade);
-				tecla = (n == 0)?"A":(n == 1)?"S":(n == 2)?"D":(n == 3)?"W":(n == 4)?"E":(n == 5)?"Z":(n == 6)?"X":(n == 7)?"C":(n == 8)?"R":(n == 9)?"F":(n == 10)?"V":(n == 11)?"P":(n == 12)?"O":(n == 13)?"L":(n == 14)?"I":(n == 15)?"K":(n == 16)?"T":(n == 17)?"G":(n == 18)?"B":(n == 19)?"Y":(n == 20)?"H":(n == 21)?"N":(n == 22)?"U":(n == 23)?"J":(n == 24)?"M":"Q"
-				if( pontos > highscore ) highscore = pontos;
-				document.getElementById("tecla").innerHTML = tecla;
-				document.getElementById("pontos").innerHTML = "Pontuação: " + pontos + " Highscore: " + highscore;
+				let dificuldade = 4 + Math.floor(pontos/6.5); //a cada 6 7
+				let indiceLetra = (letras.length > dificuldade) ? dificuldade : letras.length; //qual letra será exibida
+				let n = Math.floor(Math.random() * indiceLetra); // aleatório
+				tecla = letras[n]; //escolhe a tecla a ser digitada
+				if( pontos > highscore ) highscore = pontos; //registra o highscore
+				let teclaDOM = document.getElementById("tecla");
+				teclaDOM.classList.remove("tempoCor");
+				teclaDOM.innerHTML = tecla; //mostra a tecla na tela
+				document.getElementById("pontos").innerHTML = "Pontuação: " + pontos + " Highscore: " + highscore; //escreve a pontuação
 				// tempo pra atualizar/perder a partida
-				let tempo = 10000 - (pontos * 5);
-				if(pontos > 0)
+				let tempo = 6700 - Math.floor(pontos * 6.5); //diminui 6 7 milisegundos por ponto
+				if(pontos > 0) //primeira letra não tem limite de tempo
 				{
-					setTimeout(validaFase, tempo, pontos);
+					void teclaDOM.offsetWidth;
+					teclaDOM.style.animationDuration = `${tempo}ms`;
+					teclaDOM.classList.add("tempoCor");
+					setTimeout(validaFase, tempo, pontos); //é possivel acontecer de disparar o evento se perder o jogo e alcançar a mesma pontuação nos milisegundos, mas improvavel do ponto de vista humano (com excessão dos niveis iniciais)
 				}
 			}
 			function digito(gatilho, evento)
 			{
 				if(evento.key.toUpperCase() == tecla)
-					pontos += 1;
+					pontos += 1; //acertou mizeravi
 				else
-					pontos = 0;
+					novoJogo(); //errou
 				novaLetra();
 			}
 			function validaFase(dificuldade)
 			{
-				if(dificuldade == pontos)
-				{
+				if(dificuldade == pontos) //verifica se ainda está no mesmo nivel
+				{ //caso positivo, perdeu o jogo
 					pontos = 0;
-					novaLetra();
+					novoJogo();
 				}
 			}
 		</script>
 	</head>
 	
-	<body onload="novaLetra()" onkeydown="digito(this, event)">
+	<body onload="novoJogo()" onkeydown="digito(this, event)">
 		<div id="tecla"></div>
 		<div id="pontos"></div>
 	</body>
